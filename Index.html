@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Love💖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#161B33;
+    --dawn:#5B4B8A;
+    --amber:#F2A65A;
+    --coral:#F2685C;
+    --cream:#FDF3E7;
+    --teal:#1F5E5E;
+    --line: rgba(253,243,231,0.25);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{
+    scroll-behavior:smooth;
+    scroll-snap-type: y mandatory;
+  }
+  body{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    color:var(--cream);
+    overflow-x:hidden;
+    background:var(--night);
+  }
+  #sky{
+    position:fixed; inset:0; z-index:-3;
+    background:var(--night);
+  }
+  #bgVideo{
+    position:fixed; inset:0; z-index:-2;
+    width:100%; height:100%;
+    object-fit:cover;
+    filter:brightness(0.65) saturate(1.05);
+  }
+  #overlay{
+    position:fixed; inset:0; z-index:-1;
+    background: linear-gradient(180deg, rgba(22,27,51,0.55), rgba(22,27,51,0.85));
+    transition: background 0.4s linear;
+    pointer-events:none;
+  }
+  #stars{ display:none; }
+  section{
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:2rem 1.5rem;
+    position:relative;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:1.25rem;
+    opacity:0.9;
+  }
+  h1, h2{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    line-height:1.15;
+    max-width:680px;
+  }
+  h1{ font-size:clamp(2.1rem, 6vw, 3.4rem); }
+  h2{ font-size:clamp(1.7rem, 5vw, 2.6rem); }
+  p.body{
+    font-size:clamp(15px, 2vw, 17px);
+    line-height:1.40;
+    max-width:520px;
+    margin-top:1.25rem;
+    color:var(--cream);
+    opacity:0.88;
+  }
+  .signature{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:14px;
+    margin-top:2.5rem;
+    opacity:0.7;
+  }
+  .dots{
+    position:fixed; right:20px; top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; gap:10px; z-index:5;
+  }
+  .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--cream); opacity:0.3;
+    transition:opacity 0.3s ease, transform 0.3s ease;
+  }
+  .dot.active{ opacity:1; transform:scale(1.3); }
+  .btn{
+    margin-top:1.75rem;
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.04em;
+    color:var(--night);
+    background:var(--amber);
+    border:none;
+    padding:0.9rem 2rem;
+    border-radius:999px;
+    cursor:pointer;
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .btn:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(242,166,90,0.35); }
+  .reveal{
+    opacity:0; transform:translateY(32px) scale(0.98);
+    transition:opacity 1.1s cubic-bezier(0.22,1,0.36,1), transform 1.1s cubic-bezier(0.22,1,0.36,1);
+    will-change:opacity, transform;
+  }
+  .reveal.in{ opacity:1; transform:translateY(0) scale(1); }
+  .heart-msg{
+    margin-top:1.25rem; font-size:14px; opacity:0;
+    transition:opacity 0.6s ease;
+    color:var(--amber);
+    max-width:460px;
+  }
+  .heart-msg.show{ opacity:1; }
+
+  #audioBar{
+    position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
+    z-index:10;
+    width:min(92vw, 400px);
+    display:flex; align-items:center; gap:12px;
+    background:rgba(22,27,51,0.72);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(253,243,231,0.14);
+    border-radius:18px;
+    padding:10px 14px;
+    box-shadow:0 10px 28px rgba(0,0,0,0.35);
+  }
+  #discIcon{
+    flex-shrink:0;
+    width:38px; height:38px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, var(--amber), var(--coral) 70%);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(242,166,90,0.35);
+    animation: spin 6s linear infinite;
+    animation-play-state: paused;
+  }
+  #discIcon.spinning{ animation-play-state: running; }
+  #discIcon svg{ width:17px; height:17px; color:var(--night); }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .audioMain{ flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; }
+  .audioTopRow{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  #trackTitle{
+    font-family:'Fraunces', serif;
+    font-size:13.5px;
+    font-weight:500;
+    color:var(--cream);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  #trackIndex{
+    font-family:'Space Mono', monospace;
+    font-size:10px;
+    color:var(--amber);
+    flex-shrink:0;
+    opacity:0.85;
+  }
+  #seekRange{
+    width:100%; height:3px; accent-color:var(--amber); cursor:pointer;
+  }
+  .audioControls{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .audioControls .left-controls{ display:flex; align-items:center; gap:2px; }
+  #audioBar button{
+    background:none; border:none; color:var(--cream);
+    cursor:pointer; padding:5px; display:flex; align-items:center;
+    opacity:0.85; transition:opacity 0.2s ease, transform 0.2s ease;
+    border-radius:50%;
+  }
+  #audioBar button:hover{ opacity:1; background:rgba(253,243,231,0.08); transform:scale(1.08); }
+  #playBtn{
+    width:32px; height:32px;
+    background:var(--amber) !important;
+    color:var(--night) !important;
+    opacity:1 !important;
+  }
+  #playBtn:hover{ transform:scale(1.06); background:var(--amber) !important; }
+  #audioBar svg{ width:16px; height:16px; }
+  #playBtn svg{ width:17px; height:17px; }
+  #volumeWrap{ display:flex; align-items:center; gap:5px; }
+  #volumeRange{
+    width:48px; accent-color:var(--amber); cursor:pointer;
+  }
+
+  @media (max-width:480px){
+    .dots{ display:none; }
+    section{ padding-bottom:88px; }
+    #audioBar{ padding:8px 11px; gap:8px; border-radius:16px; width:min(90vw, 340px); bottom:12px; }
+    #discIcon{ width:30px; height:30px; }
+    #discIcon svg{ width:14px; height:14px; }
+    #trackTitle{ font-size:11.5px; }
+    #trackIndex{ font-size:9px; }
+    #playBtn{ width:28px; height:28px; }
+    #audioBar svg{ width:14px; height:14px; }
+    #volumeWrap{ display:flex; }
+    #volumeRange{ width:50px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sky"></div>
+<video id="bgVideo" autoplay muted loop playsinline>
+  <source src="Background.mp4" type="video/mp4">
+</video>
+<div id="overlay"></div>
+<div id="stars"></div>
+
+<div class="dots">
+  <div class="dot" data-i="0"></div>
+  <div class="dot" data-i="1"></div>
+  <div class="dot" data-i="2"></div>
+</div>
+
+<section id="p0">
+  <div class="reveal">
+    <p class="eyebrow">untuk icha' yang paling istimewa</p>
+    <h1>Ada carita sedikit,<br>mau ku bagi ku' malam ini.</h1>
+    <p class="body">Nda usah buru-buru. Baca pelan-pelan sja sampai habis na, karena ini dari hati langsung, bukan dari kepala ji.</p>
+    <p class="signature">— ku tulis ini karena kmu' penting sekali</p>
+  </div>
+</section>
+
+<section id="p1">
+  <div class="reveal">
+    <p class="eyebrow">kenapa ku bikin ini</p>
+    <h2>Cuma satu ji tujuanku:<br>minta maaf sejujur-jujurnya.</h2>
+    <p class="body">Bukan mo cari pembelaan, bukan pula mo kasih alasan panjang. Ku cuma mau kmu tau kalo' ku sadar salahku, dan itu betul-betul sa sesali.</p>
+  </div>
+</section>
+
+<section id="p2">
+  <div class="reveal">
+    <p class="eyebrow">mari kalo kmu mau' mulai lagi dari awal</p>
+    <h2>Kasih sya' kesempatan mulai ulang,<br>pelan-pelan, sampai serius.</h2>
+    <p class="body">Ku tau nda bisa langsung percaya lagi, dan itu wajar ji. Tapi kalau mau, mo ku tunjukkan pelan-pelan kalo sy sekarang sdh berbeda mi — insyaallh mau lebih sabar, lebih dengar, lebih menjaga prasaan mu jg. Bukan mo seperti yg di masa lalu, tapi mo bangun yang baru, sampai ke arah yang lebih serius, kalau kmu juga mau begitu.</p>
+    <button class="btn" onclick="showHeart()">iyya, sa mau coba lagi</button>
+    <p class="heart-msg" id="heartMsg">Terima kasih na... sa akan jaga betul" ini kesempatan kali ini🤍</p>
+  </div>
+</section>
+
+<div id="audioBar">
+  <div id="discIcon">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 1 0 9 9 9 9 0 0 0-9-9zm0 13a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"/></svg>
+  </div>
+  <div class="audioMain">
+    <div class="audioTopRow">
+      <span id="trackTitle">—</span>
+      <span id="trackIndex">1/5</span>
+    </div>
+    <input type="range" id="seekRange" min="0" max="100" value="0" step="0.1">
+    <div class="audioControls">
+      <div class="left-controls">
+        <button id="prevBtn" aria-label="lagu sebelumnya">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button id="playBtn" aria-label="putar atau jeda">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+        </button>
+        <button id="nextBtn" aria-label="lagu berikutnya">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
+        </button>
+      </div>
+      <div id="volumeWrap">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;opacity:0.7;flex-shrink:0"><path d="M3 10v4h4l5 5V5L7 10zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+        <input type="range" id="volumeRange" min="0" max="1" step="0.01" value="0.6">
+      </div>
+    </div>
+  </div>
+</div>
+
+<audio id="audioPlayer"></audio>
+
+<script>
+  const sections = document.querySelectorAll('section');
+  const dots = document.querySelectorAll('.dot');
+  const overlay = document.getElementById('overlay');
+
+  const palette = [
+    { top:'rgba(22,27,51,0.55)', bottom:'rgba(22,27,51,0.85)' },
+    { top:'rgba(58,61,107,0.45)', bottom:'rgba(138,110,134,0.7)' },
+    { top:'rgba(122,75,94,0.4)',  bottom:'rgba(242,104,92,0.6)' }
+  ];
+
+  function lerp(a,b,t){ return a + (b-a)*t; }
+  function parseRgba(str){
+    const m = str.match(/rgba?\(([^)]+)\)/)[1].split(',').map(s=>parseFloat(s));
+    return m;
+  }
+  function mixRgba(c1,c2,t){
+    const a=parseRgba(c1), b=parseRgba(c2);
+    const r=lerp(a[0],b[0],t), g=lerp(a[1],b[1],t), bl=lerp(a[2],b[2],t), al=lerp(a[3],b[3],t);
+    return `rgba(${r|0},${g|0},${bl|0},${al.toFixed(2)})`;
+  }
+
+  function onScroll(){
+    const y = window.scrollY;
+    const h = window.innerHeight;
+    const total = document.body.scrollHeight - h;
+    const progress = Math.min(Math.max(y/total, 0), 1);
+
+    const segCount = palette.length - 1;
+    const segPos = progress * segCount;
+    const idx = Math.min(Math.floor(segPos), segCount-1);
+    const t = segPos - idx;
+
+    const top = mixRgba(palette[idx].top, palette[idx+1].top, t);
+    const bottom = mixRgba(palette[idx].bottom, palette[idx+1].bottom, t);
+    overlay.style.background = `linear-gradient(180deg, ${top}, ${bottom})`;
+
+    const active = Math.round(progress * segCount);
+    dots.forEach((d,i)=> d.classList.toggle('active', i===active));
+  }
+
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      const el = e.target.querySelector('.reveal');
+      if(!el) return;
+      el.classList.toggle('in', e.isIntersecting);
+    });
+  }, { threshold:0.4 });
+  sections.forEach(s=>io.observe(s));
+
+  function showHeart(){
+    document.getElementById('heartMsg').classList.add('show');
+  }
+
+  const playlist = [
+    { src: 'lagu1.mp3', title: 'one in a million Ne-Yo' },
+    { src: 'lagu2.webm', title: 'Me And My Broken Heart' },
+    { src: 'lagu3.webm', title: 'Talking To The Moon' },
+    { src: 'lagu4.webm', title: 'Perfect' },
+    { src: 'lagu5.mp3', title: 'Risk It All' }
+  ];
+  let trackIndex = 0;
+
+  const audio = document.getElementById('audioPlayer');
+  const playBtn = document.getElementById('playBtn');
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+  const trackTitle = document.getElementById('trackTitle');
+  const trackIndexEl = document.getElementById('trackIndex');
+  const volumeRange = document.getElementById('volumeRange');
+  const seekRange = document.getElementById('seekRange');
+  const discIcon = document.getElementById('discIcon');
+  let isSeeking = false;
+
+  function loadTrack(i, autoplay){
+    trackIndex = (i + playlist.length) % playlist.length;
+    const track = playlist[trackIndex];
+    audio.src = track.src;
+    trackTitle.textContent = track.title;
+    trackIndexEl.textContent = (trackIndex+1) + '/' + playlist.length;
+    seekRange.value = 0;
+    if(autoplay){ audio.play().catch(()=>{}); }
+  }
+
+  function updateIcons(){
+    const playing = !audio.paused && !audio.ended;
+    playIcon.style.display = playing ? 'none' : 'block';
+    pauseIcon.style.display = playing ? 'block' : 'none';
+    discIcon.classList.toggle('spinning', playing);
+  }
+
+  playBtn.addEventListener('click', ()=>{
+    if(audio.paused){ audio.play().catch(()=>{}); }
+    else{ audio.pause(); }
+  });
+  audio.addEventListener('play', updateIcons);
+  audio.addEventListener('pause', updateIcons);
+  audio.addEventListener('ended', ()=> loadTrack(trackIndex+1, true));
+
+  audio.addEventListener('timeupdate', ()=>{
+    if(isSeeking || !audio.duration) return;
+    seekRange.value = (audio.currentTime / audio.duration) * 100;
+  });
+  seekRange.addEventListener('input', ()=>{
+    isSeeking = true;
+    if(audio.duration){ audio.currentTime = (seekRange.value/100) * audio.duration; }
+  });
+  seekRange.addEventListener('change', ()=>{ isSeeking = false; });
+
+  document.getElementById('nextBtn').addEventListener('click', ()=> loadTrack(trackIndex+1, true));
+  document.getElementById('prevBtn').addEventListener('click', ()=> loadTrack(trackIndex-1, true));
+
+  volumeRange.addEventListener('input', ()=>{ audio.volume = volumeRange.value; });
+  audio.volume = volumeRange.value;
+
+  loadTrack(0, false);
+
+  audio.play().catch(()=>{
+    const startOnFirstTouch = ()=>{
+      audio.play().catch(()=>{});
+      document.removeEventListener('touchstart', startOnFirstTouch);
+      document.removeEventListener('click', startOnFirstTouch);
+    };
+    document.addEventListener('touchstart', startOnFirstTouch, { once:true });
+    document.addEventListener('click', startOnFirstTouch, { once:true });
+  });
+</script>
+
+</body>
+</html>
